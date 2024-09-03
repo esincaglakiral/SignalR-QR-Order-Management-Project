@@ -1,0 +1,98 @@
+﻿
+@model List<ResultCategoryDto>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+	int count = 0;
+}
+
+<div class="content">
+	<div class="container-fluid">
+		<h4 class="page-title">Kategori İşlemleri</h4>
+		<div class="row">
+			<div class="col-md-12">
+
+				<div class="card">
+					<div class="card-header">
+						<div class="card-title">Kategori Listesi</div>
+					</div>
+					<div class="card-body">
+						<div class="card-sub">
+							Kategori ile ilgili işlemleri aşağıdan gerçekleştirebilirsiniz.
+						</div>
+						<table class="table mt-3">
+							<thead>
+								<tr>
+									<th scope="col">#</th>
+									<th scope="col">Kategori Adı</th>
+									<th scope="col">Durum</th>
+									<th scope="col">Sil</th>
+									<th scope="col">Güncelle</th>
+									<th scope="col">Pasif Yap</th>
+									<th scope="col">Aktif Yap</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									count++;
+									<tr>
+										<th>@count</th>
+										<td>@item.CategoryName</td>
+										<td>@(item.Status ? "Aktif" : "Pasif")</td>
+
+										<td>
+											<button onclick="confirmDelete(@item.CategoryID)" class="btn btn-outline-danger">Sil</button>
+										</td>
+
+@* 										<td><a href="/Category/DeleteCategory/@item.CategoryID" class="btn btn-outline-danger">Sil</a></td>
+ *@										<td><a href="/Category/UpdateCategory/@item.CategoryID" class="btn btn-outline-success">Güncelle</a></td>
+										<td>
+											@if (item.Status) // Eğer kategori aktifse
+											{
+												<form asp-action="DeactivateCategory" method="post" style="display:inline;">
+													<input type="hidden" name="id" value="@item.CategoryID" />
+													<button type="submit" class="btn btn-outline-warning">Pasif Yap</button>
+												</form>
+											}
+										</td>
+										<td>
+											@if (!item.Status) // Eğer kategori pasifse
+											{
+												<form asp-action="ActivateCategory" method="post" style="display:inline;">
+													<input type="hidden" name="id" value="@item.CategoryID" />
+													<button type="submit" class="btn btn-outline-info">Aktif Yap</button>
+												</form>
+											}
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+						<a href="/Category/CreateCategory/" class="btn btn-outline-primary">Yeni Kategori Girişi</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+	function confirmDelete(id) {
+		Swal.fire({
+			title: 'Kategori Silme Onayı',
+			text: 'Bu kategoriyi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlemi geri alamazsınız!',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#d33',
+			cancelButtonColor: '#3085d6',
+			confirmButtonText: 'Evet, sil!',
+			cancelButtonText: 'Vazgeç'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				window.location.href = '/Category/DeleteCategory/' + id;
+			}
+		});
+	}
+</script>

@@ -1,0 +1,149 @@
+﻿
+@* @model List<ResultBookingDto>
+ *@
+
+@using X.Web.PagedList
+@model X.PagedList.IPagedList<ResultBookingDto>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<div class="content">
+	<div class="container-fluid">
+		<h4 class="page-title">Rezervasyon İşlemleri</h4>
+		<div class="row">
+			<div class="col-md-12">
+
+				<div class="card">
+					<div class="card-header">
+						<div class="card-title">Rezervasyon Listesi</div>
+					</div>
+					<div class="card-body">
+						<div class="card-sub">
+							Rezervasyon alanıyla ilgili işlemleri yapabilirsiniz.
+						</div>
+						<table class="table mt-3">
+							<thead>
+								<tr>
+									<th scope="col">Ad Soyad</th>
+									<th scope="col">Mail</th>
+									<th scope="col">Telefon</th>
+									<th scope="col">Kişi Sayısı</th>
+									<th scope="col">Rezervasyon Durumu</th>
+
+									<th scope="col">Onayla</th>
+									<th scope="col">İptal Et</th>
+									<th scope="col">Beklet</th>
+
+							
+									<th scope="col">Güncelle</th>
+									<th scope="col">Tamamen Sil</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									count++;
+									<tr>
+										<td>@item.Name</td>
+										<td>@item.Mail</td>
+										<td>@item.Phone</td>
+										<td>@item.PersonCount Kişi</td>
+
+										<td>
+
+											<span class="badge px-2 @(item.Status == "Rezervasyon onaylandı" ? "badge-success" :
+                                                    item.Status == "Rezervasyon iptal Edildi" ? "badge-danger" :
+                                                    item.Status == "Rezervasyon bekletiliyor" ? "badge-warning" : "badge-secondary")">
+												@item.Status
+											</span>
+										</td>
+
+										<td>
+
+											<a href="@Url.Action("UpdateApproveReservation", "Booking", new { id = item.BookingID })"
+											   class="btn btn-outline-success @(item.Status == "Rezervasyon onaylandı" ? "disabled" : "")">
+												Onayla
+											</a>
+										</td>
+
+										<td>
+											<a href="@Url.Action("UpdateCancelReservation", "Booking", new { id = item.BookingID })"
+											   class="btn btn-outline-danger @(item.Status == "Rezervasyon iptal Edildi" ? "disabled" : "")">
+												İptal Et
+											</a>
+										</td>
+
+										<td>
+											<a href="@Url.Action("UpdateWaitReservation", "Booking", new { id = item.BookingID })"
+											   class="btn btn-outline-warning @(item.Status == "Rezervasyon bekletiliyor" ? "disabled" : "")">
+												Beklet
+											</a>
+										</td>
+
+										<td>
+											<a href="@Url.Action("UpdateBooking", "Booking", new { id = item.BookingID })"
+											   class="btn btn-outline-info">
+												Güncelle
+											</a>
+										</td>
+
+										<td>
+											<button onclick="deleteReservation(@item.BookingID)" class="btn btn-outline-danger">
+												Tamamen Sil
+											</button>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+						<a href="/Booking/CreateBooking/" class="btn btn-outline-primary">Yeni Rezervasyon Girişi</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+<div class="pagination">
+	@Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+			new PagedListRenderOptions
+	{
+		LiElementClasses = new string[] { "page-item" },
+		PageClasses = new string[] { "page-link" },
+		Display = PagedListDisplayMode.IfNeeded
+	})
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+	function deleteReservation(id) {
+		Swal.fire({
+			title: "Kayıt Silme Onayı",
+			text: "Bu rezervasyon kalıcı olarak silinsin mi? Bu işlemi geri alamazsınız!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#d33",
+			cancelButtonColor: "#3085d6",
+			confirmButtonText: "Evet, sil!",
+			cancelButtonText: "Vazgeç"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				window.location.href = "/Booking/DeleteBooking/" + id;
+			}
+			else {
+				Toast.fire({
+					icon: "warning",
+					title: "Rezervasyon silme işlemi iptal edildi."
+				});
+			}
+		});
+	}
+</script>

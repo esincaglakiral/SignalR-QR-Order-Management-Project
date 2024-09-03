@@ -1,0 +1,147 @@
+﻿
+@* @model List<ResultDiscountDto>
+ *@
+@using X.Web.PagedList
+@model X.PagedList.IPagedList<ResultDiscountDto>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+	int count = 0;
+}
+
+<div class="content">
+	<div class="container-fluid">
+		<h4 class="page-title">Günün İndirimleri İşlemleri</h4>
+		<div class="row">
+			<div class="col-md-12">
+
+				<div class="card">
+					<div class="card-header">
+						<div class="card-title">Günün İndirimleri Listesi</div>
+					</div>
+					<div class="card-body">
+						<div class="card-sub">
+							Günün İndirimli Ürünleri Aşağıda Yer Almaktadır. Tema Bütünlüğü İçin <strong>2 Adet</strong> İndirimli Ürün Seçiniz.
+						</div>
+						<table class="table mt-3">
+							<thead>
+								<tr>
+									<th scope="col">#</th>
+									<th scope="col">Ürün</th>
+									<th scope="col">İndirim Oranı</th>
+									<th scope="col">Durum</th>
+									<th scope="col">Sil</th>
+									<th scope="col">Güncelle</th>
+									<th scope="col">Aktif Yap</th>
+									<th scope="col">Pasif Yap</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									count++;
+									<tr>
+										<th>@count</th>
+										<td>@item.Title</td>
+										<td>@item.Amount</td>
+									
+										<td>@(item.Status ? "Etkin" : "Geçersiz")</td>
+										<td>
+											<button onclick="confirmDelete(@item.DiscountID)" class="btn btn-outline-danger">Sil</button>
+										</td>
+
+									    <td><a href="/Discount/UpdateDiscount/@item.DiscountID" class="btn btn-outline-info">Güncelle</a></td>
+
+										<td>
+											<button onclick="confirmChangeStatusToTrue(@item.DiscountID)" class="btn btn-success">Aktif Yap</button>
+										</td>
+ 
+
+										<td>
+											<button onclick="confirmChangeStatusToFalse(@item.DiscountID)" class="btn btn-dark">Pasif Yap</button>
+										</td>
+ 
+
+									</tr>
+								}
+							</tbody>
+						</table>
+						<a href="/Discount/CreateDiscount/" class="btn btn-outline-primary">Yeni İndirimli Ürün Girişi</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="pagination">
+	@Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+			new PagedListRenderOptions
+	{
+		LiElementClasses = new string[] { "page-item" },
+		PageClasses = new string[] { "page-link" },
+		Display = PagedListDisplayMode.IfNeeded
+	})
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+	function confirmDelete(id) {
+		Swal.fire({
+			title: 'İndirim Silme Onayı',
+			text: 'Bu indirimi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlemi geri alamazsınız!',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#d33',
+			cancelButtonColor: '#3085d6',
+			confirmButtonText: 'Evet, sil!',
+			cancelButtonText: 'Vazgeç'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				window.location.href = '/Discount/DeleteDiscount/' + id;
+			}
+		});
+	}
+
+
+
+	function confirmChangeStatusToTrue(id) {
+		Swal.fire({
+			title: 'İndirim Aktif Hale Getirme',
+			text: 'Bu indirimi aktif hale getirmek istediğinizden emin misiniz?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#d33',
+			cancelButtonColor: '#3085d6',
+			confirmButtonText: 'Evet, Aktif Yap!',
+			cancelButtonText: 'Vazgeç'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				window.location.href = '/Discount/ChangeStatusToTrue/' + id;
+			}
+		});
+	}
+
+
+
+
+	function confirmChangeStatusToFalse(id) {
+		Swal.fire({
+			title: 'İndirim Pasif Hale Getirme',
+			text: 'Bu indirimi geçersiz hale getirmek istediğinizden emin misiniz?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#d33',
+			cancelButtonColor: '#3085d6',
+			confirmButtonText: 'Evet, Pasif Yap!',
+			cancelButtonText: 'Vazgeç'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				window.location.href = '/Discount/ChangeStatusToFalse/' + id;
+			}
+		});
+	}
+</script>

@@ -1,0 +1,20 @@
+﻿using SignalR.EntityLayer.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SignalR.DataAccessLayer.Abstract
+{
+    public interface ICategoryDal : IGenericDal<Category>
+    {
+		int CategoryCount();
+		int ActiveCategoryCount();
+		int PassiveCategoryCount();
+
+		// Yeni metod: Kategoriyi pasif hale getirme
+		void DeactivateCategory(int id);
+		void ActivateCategory(int id);
+	}
+}

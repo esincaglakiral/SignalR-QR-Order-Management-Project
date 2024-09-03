@@ -1,0 +1,120 @@
+﻿
+
+@using X.Web.PagedList
+
+@model X.PagedList.IPagedList<ResultTestimonialDto>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <h4 class="page-title">Referans Yorum İşlemleri</h4>
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Referans Yorum Listesi</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-sub">
+                            Müşterilerin yaptığı yorumlar ile ilgili işlemleri aşağıdan gerçekleştirebilirsiniz.
+                        </div>
+                        <table class="table mt-3">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Görsel</th>
+                                    <th scope="col">Ad Soyad</th>
+                                    <th scope="col">Konu Başlığı</th>
+                                    <th scope="col">Sayfada Gösterimde Mi?</th>
+                                    <th scope="col">Pasif Yap</th>
+                                    <th scope="col">Aktif Yap</th>
+                                    <th scope="col">Sil</th>
+                                    <th scope="col">Güncelle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    count++;
+                                    <tr>
+                                        <th>@count</th>
+                                        <td><img src="@item.ImageUrl" style="width: 100px; height: auto;" /></td>
+                                        <td>@item.Name</td>
+                                        <td>@item.Title</td>
+                                        <td>@(item.Status ? "Gösterimde" : "Gösterimde Değil")</td>
+
+
+                                        <td>
+                                            @if (item.Status) // Eğer referans aktifse
+                                            {
+                                                <form asp-action="DeActivateTestimonial" method="post" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@item.TestimonialID" />
+                                                    <button type="submit" class="btn btn-warning">Gösterimden Kaldır</button>
+                                                </form>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!item.Status) // Eğer referans pasifse
+                                            {
+                                                <form asp-action="ActivateTestimonial" method="post" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@item.TestimonialID" />
+                                                    <button type="submit" class="btn btn-info">Gösterime Al</button>
+                                                </form>
+                                            }
+                                        </td>
+
+
+                                        <td>
+                                            <button onclick="confirmDelete(@item.TestimonialID)" class="btn btn-outline-danger">Sil</button>
+                                        </td>
+
+                                        <td><a href="/Testimonial/UpdateTestimonial/@item.TestimonialID" class="btn btn-outline-success">Güncelle</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <a href="/Testimonial/CreateTestimonial/" class="btn btn-outline-primary">Yeni Müşteri Yorumu Girişi</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+            new PagedListRenderOptions
+    {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" },
+        Display = PagedListDisplayMode.IfNeeded
+    })
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Referans Silme Onayı',
+            text: 'Bu Referansı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlemi geri alamazsınız!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/Testimonial/DeleteTestimonial/' + id;
+            }
+        });
+    }
+</script>
