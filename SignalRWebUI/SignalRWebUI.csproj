@@ -18,7 +18,6 @@
   <ItemGroup>
     <Folder Include="ViewComponents\DefaultComponents\" />
     <Folder Include="ViewComponents\MenuComponents\" />
-    <Folder Include="ViewComponents\UILayoutComponents\" />
   </ItemGroup>
 
 </Project>

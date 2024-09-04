@@ -130,6 +130,23 @@ namespace SignalRApi.Hubs
 
             var value11 = _productService.TTotalPriceBySaladCategory();
             await Clients.All.SendAsync("ReceiveTotalPriceBySaladCategory", value11);
+
+            var value12 = _orderService.TTodayTotalPrice();
+            await Clients.All.SendAsync("ReceiveTodayTotalPrice", value12.ToString("0.00") + "₺");
+
+            var value13 = _orderService.TLastOrderPrice();
+            await Clients.All.SendAsync("ReceiveLastOrderPrice", value13.ToString("0.00") + "₺");
+
+            var bookingCount = _bookingService.TGetBookingCount();
+            await Clients.All.SendAsync("ReceiveBookingCount", bookingCount);
+
+
+            var productCount = _productService.TProductCount();
+            await Clients.All.SendAsync("ReceiveProductCount", productCount);
+
+
+            var categoryCount = _categoryService.TCategoryCount();
+            await Clients.All.SendAsync("ReceiveCategoryCount", categoryCount);
         }
 
 
