@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewComponents\DefaultComponents\" />
     <Folder Include="ViewComponents\MenuComponents\" />
   </ItemGroup>
 
