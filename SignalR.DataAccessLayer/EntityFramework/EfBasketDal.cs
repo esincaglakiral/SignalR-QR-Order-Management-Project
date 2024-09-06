@@ -1,4 +1,5 @@
-﻿using SignalR.DataAccessLayer.Abstract;
+﻿using Microsoft.EntityFrameworkCore;
+using SignalR.DataAccessLayer.Abstract;
 using SignalR.DataAccessLayer.Concrete;
 using SignalR.DataAccessLayer.Repositories;
 using SignalR.EntityLayer.Entities;
@@ -14,6 +15,25 @@ namespace SignalR.DataAccessLayer.EntityFramework
     {
         public EfBasketDal(SignalRContext context) : base(context)
         {
+        }
+
+        public decimal BasketSum()
+        {
+            using var context = new SignalRContext();
+            return context.Baskets.Sum(x => x.TotalPrice);
+        }
+
+        public List<Basket> GetBasketByMenuTableNumber(int id)
+        {
+            using var context = new SignalRContext();
+            var values = context.Baskets.Where(x => x.MenuTableID == id).Include(y => y.Product).ToList();
+            return values;
+        }
+
+        public decimal SetCouponCode(string couponName)
+        {
+            using var context = new SignalRContext();
+            return context.CouponCodes.Where(x => x.Title == couponName).Select(y => y.Amout).FirstOrDefault();
         }
     }
 }

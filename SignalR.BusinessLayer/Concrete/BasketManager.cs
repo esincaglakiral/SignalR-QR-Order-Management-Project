@@ -25,9 +25,19 @@ namespace SignalR.BusinessLayer.Concrete
             _basketDal.Add(entity);
         }
 
+        public decimal TBasketSum()
+        {
+            return _basketDal.BasketSum();
+        }
+
         public void TDelete(Basket entity)
         {
             _basketDal.Delete(entity);
+        }
+
+        public List<Basket> TGetBasketByMenuTableNumber(int id)
+        {
+            return _basketDal.GetBasketByMenuTableNumber(id);
         }
 
         public Basket TGetByID(int id)
@@ -43,6 +53,11 @@ namespace SignalR.BusinessLayer.Concrete
         public List<Basket> TGetListByFilter(Expression<Func<Basket, bool>> where)
         {
             return _basketDal.GetListByFilter(where);
+        }
+
+        public decimal TSetCouponCode(string couponName)
+        {
+            return _basketDal.SetCouponCode(couponName);
         }
 
         public void TUpdate(Basket entity)

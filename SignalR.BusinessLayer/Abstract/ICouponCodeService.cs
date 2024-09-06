@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace SignalR.BusinessLayer.Abstract
 {
-    public interface IBasketService : IGenericService<Basket>
+    public interface ICouponCodeService : IGenericService<CouponCode>
     {
-        List<Basket> TGetBasketByMenuTableNumber(int id);
-        decimal TSetCouponCode(string couponName);
-        decimal TBasketSum();
     }
 }

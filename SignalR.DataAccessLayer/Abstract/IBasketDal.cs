@@ -9,5 +9,10 @@ namespace SignalR.DataAccessLayer.Abstract
 {
     public interface IBasketDal : IGenericDal<Basket>
     {
+        List<Basket> GetBasketByMenuTableNumber(int id);  //masa idsine göre sepeti getirme
+
+        decimal SetCouponCode(string couponName);
+
+        decimal BasketSum();
     }
 }
