@@ -11,8 +11,138 @@
     int count = 0;
 }
 
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
 <div class="content">
 	<div class="container-fluid">
+
+        <script type="text/javascript">
+
+
+            @*  Burada hem signal r hem de pagedlist kullanımı zor olduğu için SignalR'den gelen veriyi her yenileme sırasında sayfaya bölecek bir mekanizma oluşturdum.
+                Yani, veriyi JavaScript içinde parçalayarak belirli bir sayfa boyutunda tuttum. *@
+
+
+            $(document).ready(() => {
+
+                var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:7177/SignalRHub").build();
+                $("#connstatus").text(connection.state);
+                connection.start().then(() => {
+                    $("#connstatus").text(connection.state);
+                    setInterval(() => {
+                        connection.invoke("GetBookingList");
+                    }, 2000);
+                }).catch((err) => { console.log(err) });
+
+                let pageSize = 5;  // Her sayfada gösterilecek kayıt sayısı
+                let currentPage = 1;
+
+                connection.on("ReceiveBookingList", (value) => {
+                    // Veriyi sayfalara böldüm
+                    let totalItems = value.length;
+                    let totalPages = Math.ceil(totalItems / pageSize);
+
+                    let pagedData = value.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+                    renderTable(pagedData);
+                    renderPagination(totalPages);
+                });
+
+                function renderTable(data) {
+                    let tablehtml = `<table class=table mt-3>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Ad Soyad</th>
+                                <th scope="col">Mail</th>
+                                <th scope="col">Telefon</th>
+                                <th scope="col">Kişi Sayısı</th>
+                                <th scope="col">Rezervasyon Durumu</th>
+                                <th scope="col">Onayla</th>
+                                <th scope="col">İptal Et</th>
+                                <th scope="col">Beklet</th>
+                                <th scope="col">Güncelle</th>
+                                <th scope="col">Tamamen Sil</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+                    $.each(data, (index, item) => {
+                        tablehtml += `<tr>
+                            <th>${index + 1}</th>
+                            <td>${item.name}</td>
+                            <td>${item.mail}</td>
+                            <td>${item.phone}</td>
+                            <td>${item.personCount} Kişi</td>
+
+                            <td>
+                                <span class="badge px-2 ${item.status === "Rezervasyon onaylandı" ? "badge-success" :
+                                item.status === "Rezervasyon iptal Edildi" ? "badge-danger" :
+                                    item.status === "Rezervasyon bekletiliyor" ? "badge-warning" : "badge-secondary"}">
+                                    ${item.status}
+                                </span>
+                            </td>
+
+                            <td>
+                                <a href="/Booking/UpdateApproveReservation/${item.bookingID}"
+                                    class="btn btn-outline-success ${item.status === "Rezervasyon onaylandı" ? "disabled" : ""}">
+                                    Onayla
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="/Booking/UpdateCancelReservation/${item.bookingID}"
+                                    class="btn btn-outline-danger ${item.status === "Rezervasyon iptal Edildi" ? "disabled" : ""}">
+                                    İptal Et
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="/Booking/UpdateWaitReservation/${item.bookingID}"
+                                    class="btn btn-outline-warning ${item.status === "Rezervasyon bekletiliyor" ? "disabled" : ""}">
+                                    Beklet
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="/Booking/UpdateBooking/${item.bookingID}" class="btn btn-outline-info">Güncelle</a>
+                            </td>
+
+                            <td>
+                                <button onclick="deleteReservation(${item.bookingID})" class="btn btn-outline-danger">Tamamen Sil</button>
+                            </td>
+                        </tr>`;
+                    });
+
+                    tablehtml += "</tbody></table>";
+                    $("#bookingList").html(tablehtml);
+                }
+
+                function renderPagination(totalPages) {
+                    let paginationHtml = '';
+                    for (let i = 1; i <= totalPages; i++) {
+                        paginationHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a href="#" class="page-link" onclick="changePage(${i})">${i}</a>
+                        </li>`;
+                    }
+                    $(".pagination").html(paginationHtml);
+                }
+
+                window.changePage = function (page) {
+                    currentPage = page;
+                }
+            });
+
+        </script>
+
+
+   
+
 		<h4 class="page-title">Rezervasyon İşlemleri</h4>
 		<div class="row">
 			<div class="col-md-12">
@@ -23,84 +153,11 @@
 					</div>
 					<div class="card-body">
 						<div class="card-sub">
-							Rezervasyon alanıyla ilgili işlemleri yapabilirsiniz.
+							Rezervasyon ile ilgili işlemleri aşağıdan gerçekleştirebilirsiniz.
 						</div>
-						<table class="table mt-3">
-							<thead>
-								<tr>
-									<th scope="col">Ad Soyad</th>
-									<th scope="col">Mail</th>
-									<th scope="col">Telefon</th>
-									<th scope="col">Kişi Sayısı</th>
-									<th scope="col">Rezervasyon Durumu</th>
-
-									<th scope="col">Onayla</th>
-									<th scope="col">İptal Et</th>
-									<th scope="col">Beklet</th>
-
-							
-									<th scope="col">Güncelle</th>
-									<th scope="col">Tamamen Sil</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach (var item in Model)
-								{
-									count++;
-									<tr>
-										<td>@item.Name</td>
-										<td>@item.Mail</td>
-										<td>@item.Phone</td>
-										<td>@item.PersonCount Kişi</td>
-
-										<td>
-
-											<span class="badge px-2 @(item.Status == "Rezervasyon onaylandı" ? "badge-success" :
-                                                    item.Status == "Rezervasyon iptal Edildi" ? "badge-danger" :
-                                                    item.Status == "Rezervasyon bekletiliyor" ? "badge-warning" : "badge-secondary")">
-												@item.Status
-											</span>
-										</td>
-
-										<td>
-
-											<a href="@Url.Action("UpdateApproveReservation", "Booking", new { id = item.BookingID })"
-											   class="btn btn-outline-success @(item.Status == "Rezervasyon onaylandı" ? "disabled" : "")">
-												Onayla
-											</a>
-										</td>
-
-										<td>
-											<a href="@Url.Action("UpdateCancelReservation", "Booking", new { id = item.BookingID })"
-											   class="btn btn-outline-danger @(item.Status == "Rezervasyon iptal Edildi" ? "disabled" : "")">
-												İptal Et
-											</a>
-										</td>
-
-										<td>
-											<a href="@Url.Action("UpdateWaitReservation", "Booking", new { id = item.BookingID })"
-											   class="btn btn-outline-warning @(item.Status == "Rezervasyon bekletiliyor" ? "disabled" : "")">
-												Beklet
-											</a>
-										</td>
-
-										<td>
-											<a href="@Url.Action("UpdateBooking", "Booking", new { id = item.BookingID })"
-											   class="btn btn-outline-info">
-												Güncelle
-											</a>
-										</td>
-
-										<td>
-											<button onclick="deleteReservation(@item.BookingID)" class="btn btn-outline-danger">
-												Tamamen Sil
-											</button>
-										</td>
-									</tr>
-								}
-							</tbody>
-						</table>
+						<div id="bookingList"></div>
 						<a href="/Booking/CreateBooking/" class="btn btn-outline-primary">Yeni Rezervasyon Girişi</a>
+
 					</div>
 				</div>
 			</div>
@@ -111,7 +168,7 @@
 
 
 
-<div class="pagination">
+<div class="pagination">    @*  pagedlist ile sayfalara bölme *@
 	@Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
 			new PagedListRenderOptions
 	{
@@ -124,26 +181,26 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-	function deleteReservation(id) {
-		Swal.fire({
-			title: "Kayıt Silme Onayı",
-			text: "Bu rezervasyon kalıcı olarak silinsin mi? Bu işlemi geri alamazsınız!",
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#d33",
-			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Evet, sil!",
-			cancelButtonText: "Vazgeç"
-		}).then((result) => {
-			if (result.isConfirmed) {
-				window.location.href = "/Booking/DeleteBooking/" + id;
-			}
-			else {
-				Toast.fire({
-					icon: "warning",
-					title: "Rezervasyon silme işlemi iptal edildi."
-				});
-			}
-		});
-	}
+    function deleteReservation(id) {  //sweetalert
+        Swal.fire({
+            title: "Kayıt Silme Onayı",
+            text: "Bu rezervasyon kalıcı olarak silinsin mi? Bu işlemi geri alamazsınız!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Evet, sil!",
+            cancelButtonText: "Vazgeç"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Booking/DeleteBooking/" + id;
+            }
+            else {
+                Toast.fire({
+                    icon: "warning",
+                    title: "Rezervasyon silme işlemi iptal edildi."
+                });
+            }
+        });
+    }
 </script>

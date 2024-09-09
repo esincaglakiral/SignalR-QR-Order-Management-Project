@@ -1,17 +1,18 @@
 ﻿﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-@* <script src="~/microsoft/signalr/dist/browser/signalr.min.js"></script> *@
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
 
 
 
 <div class="main-header" style="top:1px;"> 
 
-@* 	<script type="text/javascript">
+	<script type="text/javascript">
 
 		$(document).ready(() => {
 
-			var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:7186/SignalRHub").build();
+			var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:7177/SignalRHub").build();
 			$("#connstatus").text(connection.state);
 			connection.start().then(() => {
 				$("#connstatus").text(connection.state);
@@ -29,21 +30,24 @@
 				console.log(value);
 				$("#notilist").empty();
 				for (var i = 0; i < value.length; i++) {
-					$("#notilist").append(`<a href="#">
-							<div class="${value[i].type}"><i class="${value[i].icon}"></i></div>
-							<div class="notif-content">
-							<span class="block">
-							${value[i].description}
-							</span>
-							<span class="time">${value[i].date}</span>
-							</div>
-							</a>
-							`)
+					var date = new Date(value[i].date);
+					var formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+
+					$("#notilist").append(`
+								<a href="/Notifications/Index/">
+									<div class="notif-icon notif-primary"> <i class="${value[i].icon}"></i> </div>
+								
+									<div class="notif-content">
+										<span class="block">${value[i].type}</span>
+										<span class="time">${formattedDate}</span>
+									</div>
+								</a>
+							`);
 				};
 			});
 		});
 
-	</script> *@
+	</script>
 
 	<div class="logo-header">
 		<a href="index.html" class="logo">
@@ -94,7 +98,7 @@
 							</div>
 						</li>
 						<li>
-							<a class="see-all" href="javascript:void(0);"> <strong>See all notifications</strong> <i class="la la-angle-right"></i> </a>
+							<a class="see-all" href="javascript:void(0);"> <strong>Tüm Bildirimleri Görüntüle</strong> <i class="la la-angle-right"></i> </a>
 						</li>
 					</ul>
 				</li>

@@ -1,0 +1,84 @@
+﻿@using SignalRWebUI.Dtos.MenuTableDtos
+@model List<ResultMenuTableDto>
+@{
+    ViewData["Title"] = "TableListByStatus";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    string color = "";
+    string status = "";
+    string icon = "";
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+<div class="content">
+    <div class="container-fluid">
+        <script type="text/javascript">
+            $(document).ready(() => {
+                var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:7177/SignalRHub").build();
+
+                connection.start().then(() => {
+                    setInterval(() => {
+                        connection.invoke("GetMenuTableStatus");
+                    }, 1000);
+
+                }).catch((err) => { console.log(err) });
+
+                connection.on("ReceiveMenuTableStatus", (value) => {
+                    var icon = "";
+                    var text = "";
+                    var classColor = "";
+
+
+                    let tablehtml = `<div class="row">`;
+                    $.each(value, (index, item) => {
+                        if (item.status == false) {
+                            icon = "la la-cutlery";
+                            text = "Masa Boş";
+                            classColor = "card card-stats card-danger";
+                        }
+                        else {
+                            icon = "la la-check";
+                            text = "Masa Dolu";
+                            classColor = "card card-stats card-success";
+                        }
+
+
+                        tablehtml += `<div class="col-md-3">
+                                                      <div class="${classColor}">
+                                                          <div class="card-body ">
+                                                              <div class="row">
+                                                                  <div class="col-5">
+                                                                      <div class="icon-big text-center">
+                                                                          <i class="${icon}"></i>
+                                                                      </div>
+                                                                  </div>
+                                                                  <div class="col-7 d-flex align-items-center">
+                                                                      <div class="numbers">
+                                                                          <p class="card-category">
+                                                                              ${item.name}
+                                                                          </p>
+                                                                          <h4 class="card-title">${text}</h4>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </div>`
+                    });
+                    tablehtml += "</div>";
+                    $("#statusList").html(tablehtml);
+                });
+            });
+        </script>
+
+
+        <h4 class="page-title">Anlık Masa Durumları</h4>
+
+        <div id="statusList">
+        </div>
+
+    </div>
+</div>

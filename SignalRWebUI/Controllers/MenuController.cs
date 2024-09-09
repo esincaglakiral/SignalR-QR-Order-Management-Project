@@ -26,9 +26,9 @@ namespace SignalRWebUI.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddBasket(int id)
+        public async Task<IActionResult> AddBasket(int id)  //parametre olarak sadece id gönderdim, CreateBasketDto da ise sadece product id yi aldığımız için 
         {
-            CreateBasketDto createBasketDto = new CreateBasketDto();
+            CreateBasketDto createBasketDto = new CreateBasketDto();  //CreateBasketDto sınfından bir tane nesne örneği oluşturdum
             createBasketDto.ProductID = id;
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(createBasketDto);

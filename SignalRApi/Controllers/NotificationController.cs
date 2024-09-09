@@ -49,6 +49,7 @@ namespace SignalRApi.Controllers
                 Status = false,
                 Type = createNotificationDto.Type,
                 Date = Convert.ToDateTime(DateTime.Now.ToShortDateString())
+               
             };
             _notificationService.TAdd(notification);
             return Ok("Ekleme işlemi başarıyla yapıldı");
@@ -86,7 +87,7 @@ namespace SignalRApi.Controllers
                 Icon = updateNotificationDto.Icon,
                 Status = updateNotificationDto.Status,
                 Type = updateNotificationDto.Type,
-                Date = updateNotificationDto.Date
+                Date = Convert.ToDateTime(DateTime.Now.ToShortDateString())
             };
             _notificationService.TUpdate(notification);
             return Ok("Güncelleme işlemi başarıyla yapıldı");

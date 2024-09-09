@@ -35,19 +35,19 @@ namespace SignalRApi.Controllers
         {
             using var context = new SignalRContext(); //Database bağlantısı kuruldu.
 
-            //Values içine include ile product tablosunu seçti -> şartı ise menu sınıfındakileri id -> seçtir bizim tanımlanan modele göre 
+            //Values içine include ile product tablosunu seçiyor => şartı ise menu sınıfındakileri id =>  bizim tanımlanan modele göre seçtir
             var values = context.Baskets.Include(x => x.Product).Where(y => y.MenuTableID == id).Select(z => new ResultBasketListWithProducts
             {
-                //Buraya ise modelde tanımlanan tablo verilerinin getirdik.
+                //Buraya ise modelde tanımlanan tablo verilerinin getirdim.
                 BasketID = z.BasketID,
                 Count = z.Count,
                 MenuTableID = z.MenuTableID,
                 Price = z.Price,
                 ProductID = z.ProductID,
                 TotalPrice = z.TotalPrice,
-                ProductName = z.Product.ProductName //Product sınıfının productname ile getirdik.
-            }).ToList();//listeleme işlemi yaptık.
-            return Ok(values); //values gösterdik
+                ProductName = z.Product.ProductName //Product sınıfının productname ile getirdim.
+            }).ToList();//listeleme işlemi yaptım.
+            return Ok(values); 
         }
 
 
