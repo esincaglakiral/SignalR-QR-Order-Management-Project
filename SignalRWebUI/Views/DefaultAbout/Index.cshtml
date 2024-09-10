@@ -1,0 +1,63 @@
+﻿@model List<ResultAboutDto>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+
+@await Component.InvokeAsync("_UILayoutHeadComponentPartial")
+
+<body class="sub_page">
+
+    @await Component.InvokeAsync("_MenuNavbarComponentPartial")
+
+    <section class="about_section layout_padding">
+        <div class="container  ">
+            @foreach (var item in Model)
+            {
+                <div class="row">
+                    <div class="col-md-6 ">
+                    <div class="img-box">
+                        <img src="@item.ImageUrl" alt="">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <div class="heading_container">
+                            <h2>
+                               @item.Title
+                            </h2>
+                        </div>
+                        <p>
+                          @item.Description
+                        </p>
+                        <br />
+                        <p>
+                           Daha fazlası için menümüzü gezip sipariş verebilir veya restoranımızı ziyaret etmek için rezervasyon oluşturabilirsiniz...
+
+                        </p>
+                        <br />
+                        <a href="/Menu/Index">
+                           Menüyü Gör
+                        </a>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </section>
+
+
+      
+                     
+
+    @await Component.InvokeAsync("_UILayoutFooterComponentPartial")
+
+    @await Component.InvokeAsync("_UILayoutScriptComponentPartial")
+
+
+</body>
+
+</html>
+

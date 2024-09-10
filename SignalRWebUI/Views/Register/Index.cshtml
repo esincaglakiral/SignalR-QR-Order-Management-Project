@@ -1,0 +1,55 @@
+﻿@model RegisterDto
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Yeni Kullanıcı Kaydı</title>
+
+    <!-- Font Icon -->
+	<link rel="stylesheet" href="~/colorlib-regform-12/fonts/material-icon/css/material-design-iconic-font.min.css">
+
+    <!-- Main css -->
+	<link rel="stylesheet" href="~/colorlib-regform-12/css/style.css">
+</head>
+<body>
+
+    <div class="main">
+
+        <div class="container">
+            <form method="post" class="appointment-form" id="appointment-form">
+                <h2>Yeni Kullanıcı Kaydı</h2>
+                <div class="form-group-1">
+                    <input type="text" name="name" id="name" asp-for="Name" placeholder="Adınız" required />
+                    <input type="text" name="surname" id="surname" asp-for="Surname" placeholder="Soyadınız" required />
+                    <input type="text" name="username" id="username" asp-for="Username" placeholder="Kullanıcı Adınız" required />
+                    <input type="email" name="mail" id="mail" asp-for="Mail" placeholder="Email Adresiniz" required />
+                    <input type="password" name="password" id="password" asp-for="Password" placeholder="Şifreniz" required />
+                </div>
+                
+                <div class="form-check">
+					<input type="checkbox" name="agree-term" id="agree-term" class="agree-term" required />
+                    <label for="agree-term" class="label-agree-term"><span><span></span></span>Kullanım Şartlarını kabul ediyorum <a href="#" class="term-service">Şartlar ve Koşullar</a></label>
+                    <br />
+                    <label for="agree-term" class="label-agree-term"><span><span></span></span>Eğer Bir Hesabınız Varsa <a href="/Login/Index" class="term-service">Giriş Sayfasına Git</a></label>
+                </div>
+                
+                <div class="form-submit">
+                    <input type="submit" name="submit" id="submit" class="submit" value="Kayıt Ol" />
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- JS -->
+	<script src="~/colorlib-regform-12/vendor/jquery/jquery.min.js"></script>
+	<script src="~/colorlib-regform-12/js/main.js"></script>
+</body>
+</html>

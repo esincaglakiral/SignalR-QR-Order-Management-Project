@@ -20,7 +20,10 @@ namespace SignalRWebUI.ViewComponents.DefaultComponents
             var responseMessage = await client.GetAsync("https://localhost:7177/api/Product");
             var jsonData = await responseMessage.Content.ReadAsStringAsync();
             var values = JsonConvert.DeserializeObject<List<ResultProductDto>>(jsonData);
-            return View(values);
+            // İlk 9 ürünü id'ye göre sırala ve al
+            var firstNineProducts = values.OrderBy(x => x.ProductID).Take(9).ToList();
+
+            return View(firstNineProducts);
         }
     }
 }
